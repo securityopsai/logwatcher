@@ -1,0 +1,54 @@
+{
+    "settings": {
+        "encoding": "utf-8",
+        "read_chunk_size": 4096,
+        "notification_rate_limit": 60,
+        "max_file_size": 100000000,
+        "buffer_size": 20,
+        "max_retries": 3
+    },
+    "patterns": {
+        "error": "(?i)\\b(error|exception|fail|critical)\\b",
+        "warning": "(?i)\\b(warning|warn|alert)\\b",
+        "security": "(?i)\\b(unauthorized|forbidden|invalid\\stoken)\\b"
+    },
+    "file_patterns": {
+        "test.log": ["error", "warning", "security"]
+    },
+    "notifications": {
+        "email": {
+            "enabled": false,
+            "smtp_server": "smtp.example.com",
+            "smtp_port": 587,
+            "username": "user@example.com",
+            "password": "your_password",
+            "to_address": ["alerts@example.com"]
+        },
+        "slack": {
+            "enabled": false,
+            "webhook_url": "https://hooks.slack.com/services/your/webhook/url"
+        },
+        "teams": {
+            "enabled": false,
+            "webhook_url": "https://webhook.office.com/webhookb2/your/teams/webhook"
+        },
+        "telegram": {
+            "enabled": false,
+            "bot_token": "your_bot_token",
+            "chat_id": "your_chat_id"
+        },
+        "syslog": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 514,
+            "facility": "local0",
+            "protocol": "udp",
+            "tag": "logwatcher"
+        }
+    },
+    "notification_rules": {
+        "error": ["email", "slack"],
+        "warning": ["slack"],
+        "security": ["email", "slack", "telegram"]
+    }
+}

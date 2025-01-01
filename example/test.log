@@ -1,0 +1,9 @@
+2024-01-02 10:00:00 INFO: System startup
+2024-01-02 10:00:05 INFO: Initializing components
+2024-01-02 10:00:10 WARNING: High CPU usage detected
+2024-01-02 10:00:15 ERROR: Failed to connect to database
+2024-01-02 10:00:20 INFO: Retry attempt 1
+2024-01-02 10:00:25 ERROR: Connection timeout
+2024-01-02 10:00:30 CRITICAL: System cannot continue without database
+2024-01-02 10:00:35 WARNING: Falling back to cached data
+2024-01-02 10:00:40 INFO: Cache retrieval successful
