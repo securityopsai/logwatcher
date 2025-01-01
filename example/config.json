@@ -10,7 +10,7 @@
     "patterns": {
         "error": "(?i)\\b(error|exception|fail|critical)\\b",
         "warning": "(?i)\\b(warning|warn|alert)\\b",
-        "security": "(?i)\\b(unauthorized|forbidden|invalid\\stoken)\\b"
+        "security": "(?i)\\b(unauthorized|forbidden|invalid\\stoken|authentication\\sfail)\\b"
     },
     "file_patterns": {
         "test.log": ["error", "warning", "security"]
