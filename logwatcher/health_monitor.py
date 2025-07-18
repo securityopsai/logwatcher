@@ -140,7 +140,8 @@ class HealthMonitor:
 
         # Check syslog if enabled
         syslog_status = status['components']['syslog']
-        if syslog_status['status'] == 'error' and syslog_status != 'disabled':
+        if (syslog_status.get('status') == 'error'
+                and syslog_status.get('status') != 'disabled'):
             return True
 
         return False
