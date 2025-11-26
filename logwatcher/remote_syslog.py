@@ -42,10 +42,10 @@ class RemoteSyslogManager:
         try:
             facility = self.config.get('facility', 'local0')
             if facility not in self.FACILITIES:
-                facility = 'local0'
                 self.logger.warning(
-                    f"Invalid facility {facility}, defaulting to local0"
+                    f"Invalid facility '{facility}', defaulting to local0"
                 )
+                facility = 'local0'
 
             socktype = (socket.SOCK_DGRAM 
                        if self.config.get('protocol', 'udp').lower() == 'udp'

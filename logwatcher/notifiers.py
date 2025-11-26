@@ -19,7 +19,7 @@ def retry_on_exception(max_retries: int = 3, delay: float = 1.0):
                 except Exception as e:
                     last_exception = e
                     if attempt < max_retries - 1:
-                        time.sleep(delay * (attempt + 1))  # Exponential backoff
+                        time.sleep(delay * (2 ** attempt))  # Exponential backoff
                     continue
             raise last_exception
         return wrapper

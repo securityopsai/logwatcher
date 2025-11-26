@@ -135,12 +135,12 @@ class HealthMonitor:
 
         # Check notifications
         for notifier_status in status['components']['notifications'].values():
-            if notifier_status.startswith('ERROR'):
+            if isinstance(notifier_status, str) and notifier_status.startswith('ERROR'):
                 return True
 
         # Check syslog if enabled
         syslog_status = status['components']['syslog']
-        if syslog_status['status'] == 'error' and syslog_status != 'disabled':
+        if syslog_status.get('status') == 'error':
             return True
 
         return False
