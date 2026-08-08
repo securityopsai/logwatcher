@@ -1,0 +1,54 @@
+{
+  "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sentinel/providers/Microsoft.OperationalInsights/workspaces/soc-ws/providers/Microsoft.SecurityInsights/incidents/9f1c2b3a-4d5e-6f70-8192-a3b4c5d6e7f8",
+  "name": "9f1c2b3a-4d5e-6f70-8192-a3b4c5d6e7f8",
+  "etag": "\"0x8DC1A2B3C4D5E6F\"",
+  "properties": {
+    "incidentNumber": 10472,
+    "title": "Suspicious authentication activity",
+    "description": "Multiple failed authentications followed by a success from a single source.",
+    "severity": "Medium",
+    "status": "New",
+    "createdTimeUtc": "2026-03-11T02:41:17.4821936Z",
+    "firstActivityTimeUtc": "2026-03-11T02:38:02Z",
+    "lastActivityTimeUtc": "2026-03-11T02:41:00Z",
+    "labels": [],
+    "relatedAnalyticRuleIds": [
+      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sentinel/providers/Microsoft.OperationalInsights/workspaces/soc-ws/providers/Microsoft.SecurityInsights/alertRules/2c4d8e10-aaaa-bbbb-cccc-1234567890ab"
+    ],
+    "alertRuleNames": ["Suspicious authentication activity"],
+    "additionalData": {
+      "alertsCount": 2,
+      "alertProductNames": ["Azure Sentinel"],
+      "tactics": ["CredentialAccess"]
+    },
+    "alerts": [
+      {
+        "id": "/alerts/1",
+        "name": "1",
+        "properties": {
+          "alertDisplayName": "Suspicious authentication activity",
+          "alertSeverity": "Medium",
+          "tactics": ["CredentialAccess"],
+          "startTimeUtc": "2026-03-11T02:38:02Z",
+          "endTimeUtc": "2026-03-11T02:41:00Z",
+          "productName": "Azure Sentinel"
+        }
+      },
+      {
+        "id": "/alerts/2",
+        "name": "2",
+        "properties": {
+          "alertDisplayName": "Suspicious authentication activity",
+          "alertSeverity": "Medium",
+          "tactics": ["CredentialAccess"],
+          "startTimeUtc": "2026-03-11T02:40:11Z"
+        }
+      }
+    ],
+    "entities": [
+      { "kind": "Ip", "properties": { "address": "10.50.10.42" } },
+      { "kind": "Account", "properties": { "accountName": "svc-vulnscan", "upnSuffix": "corp.example" } },
+      { "kind": "Host", "properties": { "hostName": "fileserver03", "netBiosName": "FILESERVER03" } }
+    ]
+  }
+}

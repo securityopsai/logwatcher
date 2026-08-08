@@ -1,0 +1,15 @@
+# Azure Functions Python worker
+azure-functions==1.21.3
+
+# Managed identity / local developer credentials
+azure-identity==1.19.0
+
+# ARM + Log Analytics REST calls
+requests==2.32.3
+
+# Config parsing and validation
+PyYAML==6.0.2
+jsonschema==4.23.0
+
+# Optional: only needed when llm.provider == "anthropic"
+# anthropic>=0.69.0

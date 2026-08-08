@@ -1,0 +1,36 @@
+{
+  "FalsePositive = countif": [
+    {
+      "Closed": 63,
+      "FalsePositive": 51,
+      "BenignPositive": 8,
+      "TruePositive": 3,
+      "Undetermined": 1
+    }
+  ],
+  "MatchedEntity, IncidentNumber": [
+    {
+      "MatchedEntity": "10.50.10.42",
+      "IncidentNumber": 10388,
+      "Classification": "BenignPositive",
+      "ClassificationReason": "SuspiciousButExpected",
+      "TimeGenerated": "2026-03-04T03:02:44.1120000Z"
+    },
+    {
+      "MatchedEntity": "svc-vulnscan@corp.example",
+      "IncidentNumber": 10201,
+      "Classification": "FalsePositive",
+      "ClassificationReason": "InaccurateData",
+      "TimeGenerated": "2026-02-25T02:55:10.0000000Z"
+    }
+  ],
+  "DistinctDays = dcount": [
+    {
+      "Value": "10.50.10.42",
+      "Events": 184320,
+      "DistinctDays": 14,
+      "FirstSeen": "2026-02-25T02:00:00Z",
+      "LastSeen": "2026-03-11T02:41:00Z"
+    }
+  ]
+}

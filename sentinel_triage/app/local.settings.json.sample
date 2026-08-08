@@ -1,0 +1,17 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+
+    "AZURE_SUBSCRIPTION_ID": "00000000-0000-0000-0000-000000000000",
+    "SENTINEL_RESOURCE_GROUP": "rg-sentinel",
+    "SENTINEL_WORKSPACE_NAME": "soc-ws",
+
+    "TRIAGE_POLL_SCHEDULE": "0 */15 * * * *",
+    "TRIAGE_POLL_LOOKBACK": "4h",
+    "TRIAGE_POLL_ENABLED": "false",
+    "TRIAGE_DRY_RUN": "true",
+    "TRIAGE_LLM_PROVIDER": "none"
+  }
+}

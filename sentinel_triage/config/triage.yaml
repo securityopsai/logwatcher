@@ -1,0 +1,204 @@
+# Sentinel triage agent configuration.
+#
+# Every value here has a built-in default, so this file only needs the things
+# you want to change. Validate it before deploying:
+#
+#   python -m triage.cli -c config/triage.yaml validate
+#
+# The two settings worth tuning first are `known_good` (your own infrastructure)
+# and `suppressions` (noise you have already decided about). Everything else
+# improves on its own as the workspace accumulates closed incidents.
+
+version: 1
+
+# --------------------------------------------------------------------------- #
+# Scoring
+# --------------------------------------------------------------------------- #
+scoring:
+  # Where an incident starts before any signal is applied.
+  baseline_by_severity:
+    Informational: 10
+    Low: 25
+    Medium: 45
+    High: 65
+
+  thresholds:
+    # score <= this  -> LikelyFalsePositive
+    false_positive_max: 30
+    # score >= this  -> LikelyTruePositive
+    true_positive_min: 70
+    # Below this confidence the agent will not call anything a false positive,
+    # no matter how low the score. Raise it to make the agent more cautious.
+    min_confidence_for_fp: 60
+
+  # Points each signal contributes. Negative de-escalates, positive escalates.
+  weights:
+    known_good_entity: -30
+    prior_fp_closure: -30
+    rule_fp_rate_high: -25
+    rule_fp_rate_moderate: -12
+    entity_very_common: -10
+    service_account: -8
+    internal_only_ips: -5
+
+    threat_intel_match: 25
+    related_open_incidents: 20
+    high_value_asset: 15
+    multi_tactic: 12
+    rule_tp_rate_high: 10
+    rare_external_ip: 8
+    off_hours: 8
+    many_alerts: 8
+
+  # A rule needs this many closed incidents before its historical rate is trusted.
+  min_closed_for_history: 5
+  # Distinct days of observation before an entity counts as routine.
+  common_entity_min_days: 10
+  # Alert count that trips the many_alerts signal.
+  many_alerts_min: 5
+
+# --------------------------------------------------------------------------- #
+# Enrichment
+# --------------------------------------------------------------------------- #
+enrichment:
+  enabled: true
+  timeout_seconds: 90
+  max_entities_per_query: 25
+
+  lookback:
+    rule_history: 90d
+    prior_closures: 30d
+    related_incidents: 24h
+    prevalence: 14d
+    threat_intel: 30d
+
+  # Tables consulted for "how often does this workspace see this entity".
+  # Missing tables are skipped automatically (union isfuzzy), so listing a table
+  # you do not ingest is harmless. Names must be bare identifiers.
+  ip_prevalence_sources:
+    - { table: CommonSecurityLog, column: SourceIP }
+    - { table: CommonSecurityLog, column: DestinationIP }
+    - { table: SigninLogs, column: IPAddress }
+    - { table: AzureActivity, column: CallerIpAddress }
+    - { table: DeviceNetworkEvents, column: RemoteIP }
+
+  account_prevalence_sources:
+    - { table: SigninLogs, column: UserPrincipalName }
+    - { table: SecurityEvent, column: TargetUserName }
+
+# --------------------------------------------------------------------------- #
+# Your environment
+# --------------------------------------------------------------------------- #
+
+# Entities you have already decided are benign. All entities of a kind must
+# match before the signal fires, so a single unexpected address defeats it.
+known_good:
+  ip_ranges: []
+  # - 10.0.0.0/8            # corporate network
+  # - 203.0.113.64/26       # egress NAT pool
+  accounts: []
+  # - '^svc-backup@corp\.example$'
+  hosts: []
+  # - '^scanner\d+\.corp\.example$'
+  domains: []
+  # - '\.corp\.example$'
+
+# Regexes that identify service and machine accounts. Matching accounts are
+# treated as slightly less interesting, not as safe.
+service_accounts:
+  patterns:
+    - '^svc[-_.]'
+    - '\$$'          # Windows machine accounts
+    - '^gmsa[-_.]'
+
+# Assets where any activity deserves a closer look.
+high_value_assets:
+  hosts: []
+  # - '^dc\d+\.'            # domain controllers
+  # - '^(ca|pki)\d*\.'
+  accounts: []
+  # - '^(admin|da|ea)-'
+  # - 'breakglass'
+
+# Activity outside these hours scores slightly higher.
+business_hours:
+  enabled: true
+  timezone: UTC        # any IANA name, e.g. Europe/London
+  start_hour: 7
+  end_hour: 19
+  workdays: [0, 1, 2, 3, 4]   # 0 = Monday
+
+# --------------------------------------------------------------------------- #
+# Suppressions
+# --------------------------------------------------------------------------- #
+# A suppression is an operator decision, not an inference: a match forces the
+# false-positive verdict at high confidence. Every condition you specify must
+# match; conditions you omit are ignored. Prefer these over lowering thresholds,
+# because each one is named, reasoned and greppable.
+suppressions: []
+  # - name: nightly-vuln-scan
+  #   reason: Qualys scanner, approved by IT ops, runs 02:00-04:00 daily
+  #   rule_names:
+  #     - 'Suspicious authentication'
+  #   entities:
+  #     ip_ranges:
+  #       - 10.50.10.0/24
+  #
+  # - name: backup-service-account
+  #   reason: Veeam service account, expected to touch every file server
+  #   rule_names:
+  #     - 'Mass file access'
+  #   max_severity: Medium
+  #   entities:
+  #     accounts:
+  #       - '^svc-veeam@'
+
+# --------------------------------------------------------------------------- #
+# Actions
+# --------------------------------------------------------------------------- #
+actions:
+  # Overridden by the TRIAGE_DRY_RUN app setting. Start true, watch a few
+  # cycles, then flip it.
+  dry_run: false
+  add_comment: true
+  add_labels: true
+  label_prefix: triage
+  # Severity is proposed in the comment, never applied — analysts triage by
+  # severity queue and an agent silently reordering it is unwelcome.
+  suggest_severity: true
+
+  auto_close:
+    # Off by default. Turning this on lets the agent close incidents.
+    enabled: false
+    min_confidence: 85
+    max_score: 20
+    classification: BenignPositive
+    # Empty means nothing is eligible. Add rules one at a time, after their
+    # verdicts have been observed to be right in dry run.
+    allowed_rules: []
+    # - 'Nightly vulnerability scan detected'
+
+# --------------------------------------------------------------------------- #
+# Narrative
+# --------------------------------------------------------------------------- #
+# The verdict is always the rule engine's. An LLM only writes the analyst-facing
+# prose, and may escalate to needs-review — never de-escalate.
+llm:
+  provider: none          # none | azure_openai | anthropic
+  model: ''               # AOAI deployment name, or e.g. claude-opus-5
+  endpoint: ''            # AOAI endpoint only
+  max_tokens: 4096
+  effort: low             # Anthropic only: low | medium | high | xhigh | max
+  temperature: 0.0        # Azure OpenAI only
+  timeout_seconds: 45
+
+# --------------------------------------------------------------------------- #
+# Polling (timer trigger)
+# --------------------------------------------------------------------------- #
+polling:
+  lookback: 4h
+  max_incidents: 50
+  statuses: [New, Active]
+  # Incidents already carrying a triage label are skipped, which is what makes
+  # overlapping runs and replays safe.
+  skip_labeled: true
